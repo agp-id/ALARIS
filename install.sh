@@ -2,7 +2,7 @@
 #########################################################
 ##  ALARIS (Arch Linux / Artix Runit Installer Script) ##
 #########################################################
-# Author      : Agung p
+# Author      : Agp2nd
 # Create date : 19-04-20221
 # Last update : 03-02-2022
 # Description : This script to make installing Arch /
@@ -47,7 +47,7 @@ _networkArch="connman wpa_supplicant"
 _initArtix="runit elogind-runit"
 _networkArtix="connman-runit wpa_supplicant"
 ## Optional packages
-_optPkg="neovim git opendoas intel-ucode broadcom-wl"
+_optPkg="neovim git opendoas intel-ucode amd-ucode broadcom-wl"
 ##-------------------------------------------------------------------------------
 ## Essential config
 _timeZone="/usr/share/zoneinfo/Asia/Jakarta"
