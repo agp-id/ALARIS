@@ -60,7 +60,7 @@ _iLoveCandy='sed -i --follow-symlinks \
             -e "/.*Color/a ILoveCandy" \
             -e "s/.*CheckSpace/CheckSpace/" \
             -e "s/.*VerbosePkgLists/VerbosePkgLists/" \
-            -e "s/.*ParallelDown.*/ParallelDownloads\ =\ 2/" \
+            -e "s/.*ParallelDown.*/ParallelDownloads\ =\ 10/" \
             /etc/pacman.conf'
 ##-------------------------------------------------------------------------------
 ## Decor
@@ -105,19 +105,20 @@ _about(){
               ${red}# ${green}People on Internet
 
 
-                ${bold}${purple}Features : ${normal}${red}- ${cyan}Suport Bios & Uefi(preferred)
+                ${bold}${purple}Features : ${normal}${red}- ${cyan}Dual BIOS Legacy/MBR & UEFI/GPT
                            ${normal}${red}- ${cyan}ext4 and fat32(Uefi boot) filesystem
-                           ${normal}${red}- ${cyan}Partition: root, boot(optional BIOS), home(optional)
+                           ${normal}${red}- ${cyan}Partition: root, boot, home(optional)
+                           ${normal}${red}- ${cyan}Encryption: dm-crypt/LUKS (optional)
                            ${normal}${red}- ${cyan}Swapfile enable (Optional)
                            ${normal}${red}- ${cyan}Select your packages, Add/Remove (except main packages)
                            ${normal}${red}- ${cyan}Add user (Optional)
 
 
-   ${bold}${yellow}Write by    : ${normal}Agung p
+   ${bold}${yellow}Write by    : ${normal}Agp2nd
    ${bold}${yellow}Github      : ${normal}https://github.com/agp-id/ALARIS
 
    ${bold}${purple}Create date : ${normal}19-04-2021
-   ${bold}${purple}Last Update : ${normal}${green}02-02-2022
+   ${bold}${purple}Last Update : ${normal}${green}07-03-2023
    \n\n"
    read -n 1 -srp "${normal}Press any key "
    echo
