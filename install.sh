@@ -148,25 +148,24 @@ _inet() {
 ##====================================================================================
 #                                   SELECTING DISTRO
 ##------------------------------------------------------------------------------------
-## Just match initial, "a" for arch or "A" for artix
 _distro_select (){
 
     _line = Boldblue "Select Distro"
 
-    printf "[${red}a${normal}]rch\n[${green}A${normal}]rtix\n---------\n${yellow}Insert initial ${red}a${normal}/${green}A${normal} : ${normal}"
+    printf "[${red}1${normal}]Arch\n[${green}2${normal}]Artix (runit)\n---------\n${yellow}Select number ${red}1${normal}/${green}2${normal} : "
     read -r _distro
         case $_distro in
-            a* ) _distro="arch" ;;
-            A* ) _distro="artix" ;;
+            1* ) _distro="arch"
+                 echo -e "\n${Boldblue}Arch Linux" ;;
+            2* ) _distro="artix"
+                 echo -e "\n${Boldblue}Artix Linux" ;;
             * ) clear
-                echo "Just match first LETTER, can't you ?"
+                echo "Please select number..."
                 _distro_select
                 return ;;
         esac
-        [[ $_distro = arch ]] &&
-            echo -e "\n${Boldblue}Arch Linux${normal} selected.\n" ||
-            echo -e "\n${Boldblue}Artix Linux${normal} selected.\n"
-    read -n 1 -srp "${normal}Press any key "
+        printf "${normal} selected.\n"
+    read -n 1 -srp "Press any key "
     echo
 }
 
