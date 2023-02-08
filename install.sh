@@ -108,7 +108,7 @@ _about(){
                 ${bold}${purple}Features : ${normal}${red}- ${cyan}Dual BIOS Legacy/MBR & UEFI/GPT
                            ${normal}${red}- ${cyan}ext4 and fat32(Uefi boot) filesystem
                            ${normal}${red}- ${cyan}Partition: root, boot, home(optional)
-                           ${normal}${red}- ${cyan}Encryption: dm-crypt/LUKS (optional)
+                           ${normal}${red}- ${cyan}Encryption: dm-crypt+LUKS (optional)
                            ${normal}${red}- ${cyan}Swapfile enable (Optional)
                            ${normal}${red}- ${cyan}Select your packages, Add/Remove (except main packages)
                            ${normal}${red}- ${cyan}Add user (Optional)
