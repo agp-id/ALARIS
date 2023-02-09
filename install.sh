@@ -24,9 +24,6 @@ trap exit SIGINT
 ##Run as root
 [[ $(id -u) != 0 ]] && echo "ROOT only !" && exit 1
 
-# Needed  befor use _line()
-clear
-
 ##====================================================================================
 ##------------------------------------------------------------------------------------
 #                                   VARIABLE
@@ -177,7 +174,7 @@ _partition (){
     _line = Boldblue "Disk & Partitions"
 
     ## Unmount if already mounted
-    umount -R /mnt/boot/efi /mnt/boot /mnt/home /mnt 2>&1 | grep "busy" && {
+    umount -R /mnt 2>&1 | grep "busy" && {
         echo "Please restart device, and try again!"
         exit 1
     }
@@ -616,7 +613,7 @@ read -r -p "Reboot now ?   [Y/n]" yn
 }
 
 ##=======================================================================================
-
+# Needed  befor use _line()
 clear
 
    _about
