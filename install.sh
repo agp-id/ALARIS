@@ -25,8 +25,35 @@ trap exit SIGINT
 [[ $(id -u) != 0 ]] && echo "ROOT only !" && exit 1
 
 ##====================================================================================
+## Decor
+normal=$(tput sgr0) #normal
+bold=$(tput bold) #bold
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+yellow=$(tput setaf 3)
+blue=$(tput setaf 4)
+purple=$(tput setaf 5)
+cyan=$(tput setaf 6)
+
+Boldblue="$bold$blue"
+Boldred="$bold$red"
+
 ##------------------------------------------------------------------------------------
 #                                   VARIABLE
+##------------------------------------------------------------------------------------
+## Essential config
+_timeZone="/usr/share/zoneinfo/Asia/Jakarta"
+_locale="en_US.UTF-8"
+
+## Pacman:I Love Candy
+_iLoveCandy='sed -i --follow-symlinks \
+            -e "s/.*Color/Color/" \
+            -e "/.*ILove.*/d" \
+            -e "/.*Color/a ILoveCandy" \
+            -e "s/.*CheckSpace/CheckSpace/" \
+            -e "s/.*VerbosePkgLists/VerbosePkgLists/" \
+            -e "s/.*ParallelDown.*/ParallelDownloads\ =\ 10/" \
+            /etc/pacman.conf'
 ##------------------------------------------------------------------------------------
 ## Packages
 _base="base linux-firmware"
@@ -45,35 +72,36 @@ _initArtix="runit elogind-runit"
 _networkArtix="connman-runit wpa_supplicant"
 ## Optional packages
 _optPkg="neovim git opendoas intel-ucode amd-ucode broadcom-wl"
-##-------------------------------------------------------------------------------
-## Essential config
-_timeZone="/usr/share/zoneinfo/Asia/Jakarta"
-_locale="en_US.UTF-8"
-
-## Pacman:I Love Candy
-_iLoveCandy='sed -i --follow-symlinks \
-            -e "s/.*Color/Color/" \
-            -e "/.*ILove.*/d" \
-            -e "/.*Color/a ILoveCandy" \
-            -e "s/.*CheckSpace/CheckSpace/" \
-            -e "s/.*VerbosePkgLists/VerbosePkgLists/" \
-            -e "s/.*ParallelDown.*/ParallelDownloads\ =\ 10/" \
-            /etc/pacman.conf'
-##-------------------------------------------------------------------------------
-## Decor
-normal=$(tput sgr0) #normal
-bold=$(tput bold) #bold
-red=$(tput setaf 1)
-green=$(tput setaf 2)
-yellow=$(tput setaf 3)
-blue=$(tput setaf 4)
-purple=$(tput setaf 5)
-cyan=$(tput setaf 6)
-
-Boldblue="$bold$blue"
-Boldred="$bold$red"
 
 ##====================================================================================
+#                                Base and Packages
+##------------------------------------------------------------------------------------
+_pkg_select() {
+
+   _line = Boldblue 'Packages Selection'
+    read -ep "${yellow}Base & Kernel   : ${normal}$_base " -i "$_kernel " _kernel
+        [[ -z $_kernel ]] && _kernel="linux "
+
+    if [[ $_distro = arch ]]; then
+        ## arch
+        read -ep "${yellow}Network         : ${normal}" -i "$_networkArch " _service
+    else
+        ## artix
+        read -ep "${yellow}Network         : ${normal}" -i "$_networkArtix " _service
+        _service="$_initArtix $_service"
+    fi
+
+    read -ep "${yellow}Bootloader      : ${normal}$_bootLoader " -i "$_bootOpt " _bootOpt
+    read -ep "${yellow}Other packages  : ${normal}" -i "$_optPkg " _optPkg
+
+    _pkgs="$_base $_kernel $_service $_bootLoader $_bootOpt $_optPkg "
+
+
+    _line = Boldblue "Locale Config"
+    read -ep "${purple}Local Time      : ${normal}" -i "$_timeZone" _timeZone
+    read -ep "${purple}Locale          : ${normal}" -i "$_locale" _locale
+}
+
 ##Title and line----------------------------------------------------------------------
 ## Usage: _line [symbol [color [title]]]
 _line(){
@@ -282,6 +310,32 @@ _swap_file (){
 }
 
 ##------------------------------------------------------------------------------------
+#                                   Mount Partition
+##------------------------------------------------------------------------------------
+_mount (){
+
+    _line = Boldblue "Mounting Partitions"
+
+    : | mkfs.ext4 /dev/"$_drive$_root"
+    mount /dev/"$_drive$_root" /mnt
+
+    if [[ $_efi = 1 ]]; then
+        : | mkfs.fat -F32 /dev/"$_drive$_boot"
+        mkdir -p /mnt/boot/efi
+        mount /dev/"$_drive$_boot" /mnt/boot/efi
+    elif [[ -n $_boot ]]; then
+        : | mkfs.ext4 /dev/"$_drive$_boot"
+        mkdir /mnt/boot
+        mount /dev/"$_drive$_boot" /mnt/boot
+    fi
+    if [[ -n $_home ]]; then
+        : | mkfs.ext4 /dev/"$_drive$_home"
+        mkdir /mnt/home
+        mount /dev/"$_drive$_home" /mnt/home
+    fi
+}
+
+##------------------------------------------------------------------------------------
 #                                DEVICE & USER
 ##------------------------------------------------------------------------------------
 _device_info (){
@@ -330,61 +384,6 @@ _user_pass() {
         return
     fi
     echo
-}
-
-##------------------------------------------------------------------------------------
-#                                Base and Packages
-##------------------------------------------------------------------------------------
-_pkg_select() {
-
-   _line = Boldblue 'Packages Selection'
-    read -ep "${yellow}Base & Kernel   : ${normal}$_base " -i "$_kernel " _kernel
-        [[ -z $_kernel ]] && _kernel="linux "
-
-    if [[ $_distro = arch ]]; then
-        ## arch
-        read -ep "${yellow}Network         : ${normal}" -i "$_networkArch " _service
-    else
-        ## artix
-        read -ep "${yellow}Network         : ${normal}" -i "$_networkArtix " _service
-        _service="$_initArtix $_service"
-    fi
-
-    read -ep "${yellow}Bootloader      : ${normal}$_bootLoader " -i "$_bootOpt " _bootOpt
-    read -ep "${yellow}Other packages  : ${normal}" -i "$_optPkg " _optPkg
-
-    _pkgs="$_base $_kernel $_service $_bootLoader $_bootOpt $_optPkg "
-
-
-    _line = Boldblue "Locale Config"
-    read -ep "${purple}Local Time      : ${normal}" -i "$_timeZone" _timeZone
-    read -ep "${purple}Locale          : ${normal}" -i "$_locale" _locale
-}
-
-##------------------------------------------------------------------------------------
-#                                   Mount Partition
-##------------------------------------------------------------------------------------
-_mount (){
-
-    _line = Boldblue "Mounting Partitions"
-
-    : | mkfs.ext4 /dev/"$_drive$_root"
-    mount /dev/"$_drive$_root" /mnt
-
-    if [[ $_efi = 1 ]]; then
-        : | mkfs.fat -F32 /dev/"$_drive$_boot"
-        mkdir -p /mnt/boot/efi
-        mount /dev/"$_drive$_boot" /mnt/boot/efi
-    elif [[ -n $_boot ]]; then
-        : | mkfs.ext4 /dev/"$_drive$_boot"
-        mkdir /mnt/boot
-        mount /dev/"$_drive$_boot" /mnt/boot
-    fi
-    if [[ -n $_home ]]; then
-        : | mkfs.ext4 /dev/"$_drive$_home"
-        mkdir /mnt/home
-        mount /dev/"$_drive$_home" /mnt/home
-    fi
 }
 
 ##------------------------------------------------------------------------------------
@@ -597,12 +596,12 @@ $CHROOT-chroot /mnt /root/install.sh
 rm -rf /mnt/root/install.sh
 
 ##FINISH-------------------------------------------------------------------------------
-_line = Boldblue FINISH
+_line = Boldblue 'FINISH'
 
 read -r -p "Reboot now ?   [Y/n]" yn
   case $yn in
      [nN]*) break
-            exit
+            exit 0
             ;;
          *) umount -R /mnt
             echo -e "You can replace bootable drive after reboot\nand ENJOY..!\n\nReboot in seconds."
